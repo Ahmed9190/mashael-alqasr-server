@@ -20,6 +20,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+const version = 1.0;
+const apkUrl = "https://drive.google.com/file/d/1Xh1QiVUo82arzHPcD_lxK6DhEYyCM_aV/view?usp=sharing";
+
 date_default_timezone_set("Asia/Riyadh");
 
 Route::post('login', [AuthController::class, "login"]);
@@ -30,8 +33,13 @@ Route::get("config", function () {
   return [
     "data" => [
       "vatRate" => floatval($lastVat / 100),
+      "version" => version,
     ]
   ];
+});
+
+Route::get('apk-url', function () {
+  return apkUrl;
 });
 
 Route::group(['middleware' => "auth:api"], function () {
