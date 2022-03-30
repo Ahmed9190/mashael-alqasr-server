@@ -18,6 +18,11 @@ class InvoiceResource extends JsonResource
         $createdUser = $this->getCreatedUser;
         $invoiceItems = $this->invoiceItems;
 
+        $customerVATno = NULL;
+
+        if ($this->Custno)
+            $customerVATno = intval(Account::getVATnum($this->Custno));
+
         return [
             "invno" => $this->invno,
             "invdate" => $this->invdate,
@@ -29,7 +34,7 @@ class InvoiceResource extends JsonResource
             "VATamount" => floatval($this->VATamount),
             "TotAfterVAT" => floatval($this->TotAfterVAT),
             "PayType" => $this->PayType == "3" ? "آجل" : "نقدي",
-            "customerVATno" => intval(Account::getVATnum($this->Custno)),
+            "customerVATno" => $customerVATno,
             "invoiceItems" => InvdetailResource::collection($invoiceItems),
         ];
     }

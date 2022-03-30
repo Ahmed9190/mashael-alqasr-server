@@ -21,11 +21,11 @@ class ReceiptController extends Controller
             $request->input("Createduserno")
         )->orderBy('Receipt.Recno', 'DESC');
 
-        if ($request->input("AccNo"))
+        if ($request->input("Custno"))
             $receipt->where(
                 "RecDetail.Accno",
                 "=",
-                $request->input("AccNo")
+                $request->input("Custno")
             );
         if ($request->input("from"))
             $receipt->whereDate(

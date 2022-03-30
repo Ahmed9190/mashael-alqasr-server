@@ -24,11 +24,6 @@ date_default_timezone_set("Asia/Riyadh");
 
 Route::post('login', [AuthController::class, "login"]);
 
-Route::resource('customer', AccountController::class)->only(["index", "show"]);
-Route::resource('invoice', InvoiceController::class)->only(["index", "store", "show"]);
-Route::resource('receipt', ReceiptController::class)->only(["index", "store", "show"]);
-Route::get('items', [ItemController::class, "index"]);
-Route::get("credit-restrictions", [CreditLimitController::class, 'show']);
 Route::get("config", function () {
   $lastDate = DB::table("VATpercentDate")->max("VATdate");
   $lastVat = DB::table("VATpercentDate")->where("VATdate", $lastDate)->get(['VATpercent'])[0]->VATpercent;
@@ -37,4 +32,12 @@ Route::get("config", function () {
       "vatRate" => floatval($lastVat / 100),
     ]
   ];
+});
+
+Route::group(['middleware' => "auth:api"], function () {
+  Route::resource('customer', AccountController::class)->only(["index", "show"]);
+  Route::resource('invoice', InvoiceController::class)->only(["index", "store", "show"]);
+  Route::resource('receipt', ReceiptController::class)->only(["index", "store", "show"]);
+  Route::get('items', [ItemController::class, "index"]);
+  Route::get("credit-restrictions", [CreditLimitController::class, 'show']);
 });
