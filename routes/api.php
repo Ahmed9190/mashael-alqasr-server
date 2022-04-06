@@ -20,8 +20,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-const version = 1.2;
-const apkUrl = "https://drive.google.com/file/d/1rYF1e7F9ZvU8YHUY8gBqhCUmAWkGsrE5/view?usp=sharing";
+const version = 1.3;
+const apkUrl = "https://www.mediafire.com/file/ly6c34c1b7tx8c9/app-release-4.apk/file";
 
 date_default_timezone_set("Asia/Riyadh");
 
