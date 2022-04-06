@@ -19,9 +19,6 @@ class UserResource extends JsonResource
             "userNo" => $this->User_no,
             "userName" => $this->User_Name,
             "BranchSubno" => $this->BranchSubno,
-            "WHno" => $this->WHno,
-            //TODO:think to remove it if it is not necessary 
-            "creditLimit" => floatval($this->branchSub->CreditLimit),
             "storeNo" => floatval($this->branchSub->StoreNo),
             "cashAccno" => intval($this->branchSub->CashAccno),
             "saleAccountno" => $this->branchSub->SaleAccno,

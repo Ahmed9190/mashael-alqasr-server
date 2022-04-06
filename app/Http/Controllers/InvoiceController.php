@@ -56,8 +56,8 @@ class InvoiceController extends Controller
 
         $invno = SaleHeader::getNextInvNo();
 
-        $this->createSaleheader($request, $invno);
         $this->createInvDetails($request, $invno);
+        $this->createSaleheader($request, $invno);
 
         // return $invoice;
         return new InvoiceResource(SaleHeader::find($invno));
@@ -91,13 +91,13 @@ class InvoiceController extends Controller
             "QuotNo" => 0,
             "PrepareNo" => 0,
             "Createduserno" => $request->input('Createduserno'),
-            "CreatedDate" => new DateTime('today'),
+            "CreatedDate" => new DateTime(),
             "TotQty" => $this->getTotalQuantity($request->input("items")),
             // "NetTotChar" => NULL,
             "Custno" => $request->input('Custno'),
             "Pricing" => 1,
             // "Refno" => 1701,
-            // "GroupTotQty" => 3,
+            "GroupTotQty" => Invdetail::getGroupTotQty($invno),
             "Posted" => 1,
             "Transno" => 0,
             "VATaccno" => DB::table("Config")->first('VATaccnoOut')->VATaccnoOut,
@@ -110,10 +110,15 @@ class InvoiceController extends Controller
 
     private function getCostTotal($items)
     {
+        $itemsNumbers = array_map(fn ($item) => $item["Itemno"], $items);
+        $itemsAvgCosts = Item::whereIn("Itemno", $itemsNumbers)->get("AvgCost")->toArray();
+        $avgCosts = array_map(fn ($item) => $item['AvgCost'], $itemsAvgCosts);
+
         $CostTotal = 0;
         for ($i = 0; $i < count($items); $i++) {
             $item = $items[$i];
-            $CostTotal += $item["unitPrice"] * $item["QTY"];
+            $avgCost = $avgCosts[$i];
+            $CostTotal += $avgCost * $item["QTY"];
         }
         return $CostTotal;
     }
@@ -121,7 +126,7 @@ class InvoiceController extends Controller
     private function getTotalQuantity($items)
     {
         return array_reduce($items, function ($accumulator, $currentValue) {
-            return $accumulator + $currentValue['QTY'];
+            return $accumulator + $currentValue['QTY'] + $currentValue['freeQty'];
         }, 0);
     }
     private function getVATamount($total)
@@ -141,6 +146,9 @@ class InvoiceController extends Controller
 
         for ($i = 0; $i < count($items); $i++) {
             $item = $items[$i];
+
+            $unitQty = $this->getUnitQty($item);
+
             array_push($invdetailRows, [
                 "Invno" => $invno,
                 "Branchno" => 1,
@@ -160,16 +168,16 @@ class InvoiceController extends Controller
                 "PrevGroupQTY" => 0,
                 "OrigQTY" => 0,
                 "OrigGroupQTY" => 0,
-                "Cost" => Item::where("itemno", $item["Itemno"])->first('AvgCost')->AvgCost,
+                "Cost" => Item::getAvgCost($item["Itemno"]),
                 "Selected" => '0',
                 "Unitno" => 1,
-                "UnitQty" => 1,
+                "UnitQty" => $unitQty,
                 "Groupno" => 0,
-                "GroupQty" => 1,
+                "GroupQty" => $item["QTY"] / $unitQty,
                 "ExchangeRate" => 1,
                 "ExpenseRate" => 0,
                 // "Partno" => NULL,
-                // "GroupUnitPrice" => 0,
+                "GroupUnitPrice" => $item["unitPrice"],
                 "SaleType" => $item["SaleType"],
                 "FreeQty" => $item["freeQty"],
                 // "oldIMEI" => NULL,
@@ -179,6 +187,19 @@ class InvoiceController extends Controller
         }
 
         Invdetail::insert($invdetailRows);
+    }
+
+    private function getUnitQty($item)
+    {
+        switch ($item['SaleType']) {
+            case 1: //إفرادي=1 , عروض مجانية=4
+            case 4:
+                return 1;
+            case 2: //جملة
+                return Item::getWholeSaleQty($item["Itemno"]);
+            case 3: //كبار العملاء
+                return Item::getVIPSaleQty($item["Itemno"]);
+        }
     }
 
 

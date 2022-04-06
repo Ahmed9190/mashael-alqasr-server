@@ -28,4 +28,19 @@ class Item extends Model
         "VIPSaleQty" => "integer",
         "VIPSalePrice" => "float",
     ];
+
+    static public function getAvgCost($itemNo)
+    {
+        return Item::find($itemNo)->AvgCost;
+    }
+
+    static public function getWholeSaleQty($itemNo)
+    {
+        return Item::find($itemNo)->WholeSaleQty;
+    }
+
+    static public function getVIPSaleQty($itemNo)
+    {
+        return Item::find($itemNo)->VIPSaleQty;
+    }
 }

@@ -39,7 +39,9 @@ class InvoiceRequest extends FormRequest
                     "Itemno" => "required|string",
                     "QTY" => "required|numeric",
                     "unitPrice" => "required|numeric",
-                    "freeQty" => "required|numeric"
+                    "ItemDesc" => "required|string",
+                    "freeQty" => "required|numeric",
+                    "SaleType" => "required|numeric",
                 ]
             ]
 

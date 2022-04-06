@@ -15,4 +15,9 @@ class Invdetail extends Model
     {
         return $this->belongsTo(SaleHeader::class, "Invno", "invno");
     }
+
+    public static function getGroupTotQty($invno)
+    {
+        return Invdetail::where("Invno", $invno)->sum("GroupQty");
+    }
 }

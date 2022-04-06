@@ -25,7 +25,7 @@ class InvoiceResource extends JsonResource
 
         return [
             "invno" => $this->invno,
-            "invdate" => $this->invdate,
+            "invdate" => $this->CreatedDate,
             "CustName" => $this->CustName,
             //TODO:remove all comments
             "total" => floatval($this->total),
