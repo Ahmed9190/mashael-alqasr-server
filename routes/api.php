@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-const version = 1.1;
+const version = 1.2;
 const apkUrl = "https://drive.google.com/file/d/1Ciy8rk5HReYcF8hb4RAOEcdF3o3cCuSN/view?usp=sharing";
 
 date_default_timezone_set("Asia/Riyadh");
