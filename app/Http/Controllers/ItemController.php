@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Resources\ItemsResource;
 use App\Models\BranchSub;
+use App\Models\UserItemQuantities;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class ItemController extends Controller
 {
@@ -13,8 +13,7 @@ class ItemController extends Controller
     {
         $branchSub = BranchSub::find($request->input("branchSubNo"));
 
-        $items = DB::table("user_item_quantities")
-            ->where("user_store_no", $request->input("storeNo"))
+        $items = UserItemQuantities::where("user_store_no", $request->input("storeNo"))
             ->join("Items", "user_item_quantities.item_no", "Items.itemno")
             ->select([
                 "item_no",
