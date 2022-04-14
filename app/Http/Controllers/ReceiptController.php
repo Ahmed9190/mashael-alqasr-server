@@ -8,6 +8,7 @@ use App\Models\Receipt;
 use Illuminate\Http\Request;
 use App\Http\Resources\ReceiptResource;
 use DateTime;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ReceiptController extends Controller
@@ -54,30 +55,32 @@ class ReceiptController extends Controller
 
     public function store(ReceiptRequest $request)
     {
-        $newRecNo = strval($this->getLastRecNo() + 1);
+        DB::transaction(function () use ($request) {
 
-        $receipt = Receipt::create(
-            [
-                "Recno" => $newRecNo,
-                "RecYear" => 2017,
-                "Branchno" => 1,
-                "RecDate" => date('Y-m-d'),
-                "Amount" => $request->input("amount"),
-                "Description" => $request->input("description"),
-                "RecAccno" => $request->input("cashAccNo"),
-                "RecType" => 1,
-                "Posted" => 1,
-                "SaleInvNo" => 0,
-                "Createduserno" => $request->input("userNo"),
-                "CreatedDate" => date('Y-m-d H:i:s'),
-            ]
-        );
+            $newRecNo = strval($this->getLastRecNo() + 1);
+            $receipt = Receipt::create(
+                [
+                    "Recno" => $newRecNo,
+                    "RecYear" => 2017,
+                    "Branchno" => 1,
+                    "RecDate" => date('Y-m-d'),
+                    "Amount" => $request->input("amount"),
+                    "Description" => $request->input("description"),
+                    "RecAccno" => $request->input("cashAccNo"),
+                    "RecType" => 1,
+                    "Posted" => 1,
+                    "SaleInvNo" => 0,
+                    "Createduserno" => $request->input("userNo"),
+                    "CreatedDate" => date('Y-m-d H:i:s'),
+                ]
+            );
 
-        $receipt->Recno = $newRecNo;
+            $receipt->Recno = $newRecNo;
 
-        RecDetailController::store($request, $newRecNo);
+            RecDetailController::store($request, $newRecNo);
 
-        return new ReceiptResource($receipt);
+            return new ReceiptResource($receipt);
+        });
     }
 
     private function getLastRecNo()

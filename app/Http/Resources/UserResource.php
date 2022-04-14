@@ -18,10 +18,10 @@ class UserResource extends JsonResource
         return [
             "userNo" => $this->User_no,
             "userName" => $this->User_Name,
-            "BranchSubno" => $this->BranchSubno,
+            "branchSubNo" => $this->BranchSubno,
             "storeNo" => floatval($this->branchSub->StoreNo),
-            "cashAccno" => intval($this->branchSub->CashAccno),
-            "saleAccountno" => $this->branchSub->SaleAccno,
+            "cashAccNo" => intval($this->branchSub->CashAccno),
+            "saleAccountNo" => $this->branchSub->SaleAccno,
         ];
     }
 }

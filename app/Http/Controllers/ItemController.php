@@ -3,16 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ItemsResource;
-use App\Models\Item;
+use App\Models\BranchSub;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class ItemController extends Controller
 {
     public function index(Request $request)
     {
-        Log::info("QTY" . $request->input("storeNo"));
-        $items = Item::where("QTY" . $request->input("storeNo"), ">", 0);
+        $branchSub = BranchSub::find($request->input("branchSubNo"));
+
+        $items = DB::table("user_item_quantities")
+            ->where("user_store_no", $request->input("storeNo"))
+            ->join("Items", "user_item_quantities.item_no", "Items.itemno")
+            ->select([
+                "item_no",
+                "itemDesc",
+                "SellPrice" . $branchSub->SellingPriceCat . " as sell_price",
+                "available_qty",
+                "WholeSaleActive",
+                "WholeSaleQty",
+                "WholeSalePrice",
+                "VIPSaleActive",
+                "VIPSaleQty",
+                "VIPSalePrice",
+                "PromotionQtyReq",
+                "PromotionQtyFree",
+            ]);
         if ($request->input("query"))
             $items->where(
                 function ($items) use ($request) {
@@ -23,8 +40,9 @@ class ItemController extends Controller
 
         $items = $items->simplePaginate();
 
-        return ItemsResource::collection($items->getCollection())->additional([
-            "hasMore" => $items->hasMorePages(),
-        ]);
+        return ItemsResource::collection($items->getCollection())
+            ->additional([
+                "hasMore" => $items->hasMorePages(),
+            ]);
     }
 }

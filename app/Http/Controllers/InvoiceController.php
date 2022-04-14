@@ -56,8 +56,10 @@ class InvoiceController extends Controller
 
         $invno = SaleHeader::getNextInvNo();
 
-        $this->createInvDetails($request, $invno);
-        $this->createSaleheader($request, $invno);
+        DB::transaction(function () use ($request, $invno) {
+            $this->createInvDetails($request, $invno);
+            $this->createSaleheader($request, $invno);
+        });
 
         // return $invoice;
         return new InvoiceResource(SaleHeader::find($invno));
@@ -125,10 +127,16 @@ class InvoiceController extends Controller
 
     private function getTotalQuantity($items)
     {
-        return array_reduce($items, function ($accumulator, $currentValue) {
-            return $accumulator + $currentValue['QTY'] + $currentValue['freeQty'];
+        return array_reduce($items, function ($accumulator, $item) {
+            return $accumulator + $this->calculateTotalQty($item);
         }, 0);
     }
+
+    private function calculateTotalQty($item)
+    {
+        return $item['QTY'] + $item['freeQty'];
+    }
+
     private function getVATamount($total)
     {
         $vat = VATpercentDateController::show() / 100.0;
@@ -156,7 +164,7 @@ class InvoiceController extends Controller
                 "Itemno" => $item["Itemno"],
                 "ItemDesc" => $item["ItemDesc"],
                 "invKind" => 1,
-                "QTY" => $item["QTY"],
+                "QTY" => $this->calculateTotalQty($item),
                 "unitPrice" => $item["unitPrice"],
                 "Discount" => 0,
                 "DiscountAmount" => 0,
