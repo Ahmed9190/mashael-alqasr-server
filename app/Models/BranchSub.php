@@ -18,6 +18,11 @@ class BranchSub extends Model
         "SaleAccno" => "integer"
     ];
 
+    static public function getStoreNo($branchSubno)
+    {
+        return BranchSub::where("Num", $branchSubno)->first()->StoreNo;
+    }
+
     // public function user()
     // {
     //     return $this->hasOne(User::class, "Num", "BranchSubno");
