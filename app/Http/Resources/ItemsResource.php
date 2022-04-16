@@ -100,6 +100,6 @@ class ItemsResource extends JsonResource
                 break;
         }
 
-        return $qty;
+        return floatval($qty);
     }
 }
