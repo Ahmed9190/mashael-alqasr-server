@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\BranchSub;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ItemsResource extends JsonResource
@@ -20,29 +21,29 @@ class ItemsResource extends JsonResource
         $this->addVIPSaleIfActive();
         $this->addPromotionSaleIfActive();
 
-
+        $branchSub = BranchSub::find($request->input("branchSubNo"));
         return [
-            "number" => $this->item_no,
+            "number" => $this->itemno,
             "name" => $this->itemDesc,
-            "availableQty" => intval($this->available_qty),
-            "sellPrice" => floatval($this->sell_price),
+            "availableQty" => intval($this->CurrQty),
+            "sellPrice" => $this->getSalePrice($branchSub->SellingPriceCat),
         ] + $this->additionalColumns;
     }
 
     private function addWholeSaleIfActive()
     {
         if (
-            $this->WholeSaleActive &&
+            // $this->WholeSaleActive &&
             $this->WholeSaleQty > 0 &&
-            $this->available_qty > $this->WholeSaleQty &&
-            $this->WholeSalePrice > 0
+            $this->CurrQty > $this->WholeSaleQty &&
+            $this->WholeSale > 0
         )
             $this->additionalColumns = array_merge(
                 $this->additionalColumns,
                 [
                     "wholeSale" => [
                         "qty" => intval($this->WholeSaleQty),
-                        "price" => floatval($this->WholeSalePrice),
+                        "price" => floatval($this->WholeSale),
                     ]
                 ]
             );
@@ -51,17 +52,17 @@ class ItemsResource extends JsonResource
     private function addVIPSaleIfActive()
     {
         if (
-            $this->VIPSaleActive &&
-            $this->VIPSaleQty > 0 &&
-            $this->available_qty > $this->VIPSaleQty &&
-            $this->VIPSalePrice > 0
+            // $this->VIPSaleActive &&
+            $this->VIPsaleQty > 0 &&
+            $this->CurrQty > $this->VIPsaleQty &&
+            $this->VIPsale > 0
         )
             $this->additionalColumns = array_merge(
                 $this->additionalColumns,
                 [
                     "vipSale" => [
-                        "qty" => intval($this->VIPSaleQty),
-                        "price" => floatval($this->VIPSalePrice),
+                        "qty" => intval($this->VIPsaleQty),
+                        "price" => floatval($this->VIPsale),
                     ]
                 ]
             );
@@ -69,7 +70,7 @@ class ItemsResource extends JsonResource
     private function addPromotionSaleIfActive()
     {
         if (
-            $this->available_qty >= $this->PromotionQtyReq + $this->PromotionQtyFree &&
+            $this->CurrQty >= $this->PromotionQtyReq + $this->PromotionQtyFree &&
             $this->PromotionQtyReq > 0 &&
             $this->PromotionQtyFree > 0
         )
@@ -82,5 +83,23 @@ class ItemsResource extends JsonResource
                     ]
                 ]
             );
+    }
+
+    private function getSalePrice($salePriceCat)
+    {
+        $qty = NULL;
+        switch ($salePriceCat) {
+            case 1:
+                $qty = $this->SellPrice1;
+                break;
+            case 2:
+                $qty = $this->SellPrice2;
+                break;
+            case 3:
+                $qty = $this->SellPrice3;
+                break;
+        }
+
+        return $qty;
     }
 }

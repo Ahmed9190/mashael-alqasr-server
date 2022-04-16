@@ -8,6 +8,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ReceiptController;
 use App\Models\Item;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -34,41 +35,6 @@ Route::get("config", [ConfigController::class, "show"]);
 
 Route::get('apk-url', function () {
   return ["data" => apkUrl];
-});
-
-Route::get('test', function () {
-  $items = Item::all()->toArray();
-  foreach ($items as $item) {
-    $submit =  DB::select("
-    DECLARE @Result float
-    
-    EXEC sp_QtyInStock
-    N'01-01-2000', 
-    N'01-01-2100', 
-    50, 
-    N'104039000339', 
-    @Result OUTPUT
-    ");
-    DB::table("user_item_quantities")->insert(
-      [
-        "item_no" => $item['itemno'],
-        "user_store_no" => 50,
-        "available_qty" => intval($submit[0]->Result),
-      ]
-    );
-  }
-
-  $submit =  DB::select("
-    DECLARE @Result float
-    
-    EXEC sp_QtyInStock
-    N'01-01-2000', 
-    N'01-01-2100', 
-    50, 
-    N'104039000339', 
-    @Result OUTPUT
-  ");
-  return ["data" => $submit[0]];
 });
 
 Route::group(['middleware' => "auth:api"], function () {
