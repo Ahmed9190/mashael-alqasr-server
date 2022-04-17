@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ItemsResource;
-use App\Models\BranchSub;
-use App\Models\UserItemQuantities;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -26,13 +24,15 @@ class ItemController extends Controller
     {
         $page = $request->input('page');
         $Whno = $request->input('storeNo');
+        $searchValue = $request->input('query') ?? "";
         $data =  DB::select(
             "SET NOCOUNT ON;
             EXEC sp_QtyByWH_Mobile
                 @FromDate = N'2000/01/01',
                 @ToDate = N'2100/01/01',
-                @Whno = ?",
-            [$Whno]
+                @Whno = ?,
+                @searchValue = ?",
+            [$Whno, $searchValue]
         );
         $paginationData = $this->paginate($data, $page);
         // return [

@@ -5,11 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\InvoiceRequest;
 use App\Http\Resources\InvoiceResource;
 use App\Http\Resources\SaleHeaderResource;
-use App\Models\BranchSub;
 use App\Models\Invdetail;
 use App\Models\Item;
 use App\Models\SaleHeader;
-use App\Models\UserItemQuantities;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -61,7 +59,6 @@ class InvoiceController extends Controller
         DB::transaction(function () use ($request, $invno) {
             $this->createInvDetails($request, $invno);
             $this->createSaleheader($request, $invno);
-            $this->subtractQuantities($request->input("items"), $request->input("BranchSubno"));
         });
 
         // return $invoice;
@@ -213,18 +210,6 @@ class InvoiceController extends Controller
         }
     }
 
-    private function subtractQuantities($items, $branchSubno)
-    {
-        $storeNo = BranchSub::getStoreNo($branchSubno);
-
-        foreach ($items as $invoiceItem) {
-            UserItemQuantities::where([
-                "user_store_no" => $storeNo,
-                "item_no" => $invoiceItem["Itemno"],
-            ])->decrement("available_qty", $invoiceItem["QTY"] + $invoiceItem["freeQty"]);
-        }
-        UserItemQuantities::where("available_qty", 0)->delete();
-    }
 
 
     public function show($id)

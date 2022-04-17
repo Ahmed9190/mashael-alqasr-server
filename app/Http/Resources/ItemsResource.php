@@ -18,7 +18,7 @@ class ItemsResource extends JsonResource
     public function toArray($request)
     {
         $this->addWholeSaleIfActive();
-        $this->addVIPSaleIfActive();
+        // $this->addVIPSaleIfActive();
         $this->addPromotionSaleIfActive();
 
         $branchSub = BranchSub::find($request->input("branchSubNo"));
@@ -49,24 +49,24 @@ class ItemsResource extends JsonResource
             );
     }
 
-    private function addVIPSaleIfActive()
-    {
-        if (
-            // $this->VIPSaleActive &&
-            $this->VIPsaleQty > 0 &&
-            $this->CurrQty > $this->VIPsaleQty &&
-            $this->VIPsale > 0
-        )
-            $this->additionalColumns = array_merge(
-                $this->additionalColumns,
-                [
-                    "vipSale" => [
-                        "qty" => intval($this->VIPsaleQty),
-                        "price" => floatval($this->VIPsale),
-                    ]
-                ]
-            );
-    }
+    // private function addVIPSaleIfActive()
+    // {
+    //     if (
+    //         // $this->VIPSaleActive &&
+    //         $this->VIPsaleQty > 0 &&
+    //         $this->CurrQty > $this->VIPsaleQty &&
+    //         $this->VIPsale > 0
+    //     )
+    //         $this->additionalColumns = array_merge(
+    //             $this->additionalColumns,
+    //             [
+    //                 "vipSale" => [
+    //                     "qty" => intval($this->VIPsaleQty),
+    //                     "price" => floatval($this->VIPsale),
+    //                 ]
+    //             ]
+    //         );
+    // }
     private function addPromotionSaleIfActive()
     {
         if (
