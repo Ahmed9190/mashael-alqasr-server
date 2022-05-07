@@ -10,10 +10,14 @@ class AccountController extends Controller
 {
     public function index(Request $request)
     {
-        $customers = Account::where("Sellerno", $request->input("BranchSubno"))->get();
-        return CustomerResource::collection($customers)->additional([
-            //TODO:implement pagination
-            "hasMore" => false,
+        $customers = Account::where([
+            ["Sellerno", $request->input("BranchSubno")],
+            ["AccName", "LIKE", "%{$request->input("searchValue")}%"],
+        ])
+            ->simplePaginate();
+        return CustomerResource::collection($customers->getCollection())->additional([
+            "handshakeCode" => $request->input("handshakeCode"),
+            "hasMore" => $customers->hasMorePages(),
         ]);
     }
 
