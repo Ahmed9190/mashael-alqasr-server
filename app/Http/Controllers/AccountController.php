@@ -10,9 +10,11 @@ class AccountController extends Controller
 {
     public function index(Request $request)
     {
+        $searchValue = $request->input("query") ?? "";
+
         $customers = Account::where([
             ["Sellerno", $request->input("BranchSubno")],
-            ["AccName", "LIKE", "%{$request->input("searchValue")}%"],
+            ["AccName", "LIKE", "%{$searchValue}%"],
         ])
             ->simplePaginate();
         return CustomerResource::collection($customers->getCollection())->additional([
