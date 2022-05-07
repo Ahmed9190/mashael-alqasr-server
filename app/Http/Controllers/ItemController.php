@@ -40,6 +40,7 @@ class ItemController extends Controller
         // ];
         return ItemsResource::collection($paginationData->getCollection())
             ->additional([
+                "handshakeCode" => $request->input("handshakeCode"),
                 "hasMore" => $paginationData->hasMorePages(),
             ]);
     }
