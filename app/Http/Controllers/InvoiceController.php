@@ -61,7 +61,6 @@ class InvoiceController extends Controller
             $this->createSaleheader($request, $invno);
         });
 
-        // return $invoice;
         return new InvoiceResource(SaleHeader::find($invno));
     }
 

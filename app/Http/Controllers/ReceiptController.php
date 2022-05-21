@@ -55,8 +55,7 @@ class ReceiptController extends Controller
 
     public function store(ReceiptRequest $request)
     {
-        DB::transaction(function () use ($request) {
-
+        return DB::transaction(function () use ($request) {
             $newRecNo = strval($this->getLastRecNo() + 1);
             $receipt = Receipt::create(
                 [
