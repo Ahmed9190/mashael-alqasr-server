@@ -15,7 +15,7 @@ class CreditLimitController extends Controller
         $delegateMaxAllowableCredit = $this->getDelegateMaxAllowableCredit($request->branchSubno);
 
         return [
-            "data" => floatval(round(min($customerMaxAllowableCredit, $delegateMaxAllowableCredit), 2))
+            "data" => max(floatval(round(min($customerMaxAllowableCredit, $delegateMaxAllowableCredit), 2)), 0)
         ];
     }
 
