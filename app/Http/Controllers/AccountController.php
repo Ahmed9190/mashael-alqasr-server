@@ -15,8 +15,8 @@ class AccountController extends Controller
         $customers = Account::where([
             ["Sellerno", $request->input("BranchSubno")],
             ["AccName", "LIKE", "%{$searchValue}%"],
-        ])
-            ->simplePaginate();
+        ])->simplePaginate();
+
         return CustomerResource::collection($customers->getCollection())->additional([
             "handshakeCode" => $request->input("handshakeCode"),
             "hasMore" => $customers->hasMorePages(),
