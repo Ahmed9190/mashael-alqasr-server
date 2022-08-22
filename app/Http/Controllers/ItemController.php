@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Resources\ItemsResource;
+use App\Models\BranchSub;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ItemController extends Controller
 {
@@ -22,22 +25,29 @@ class ItemController extends Controller
 
     public function index(Request $request)
     {
-        $page = $request->input('page');
-        $Whno = $request->input('storeNo');
-        $searchValue = $request->input('query') ?? "";
+
+        $page = $request->input("page");
+        $Whno = $request->input("storeNo");
+        $searchValue = $request->input("query") ?? "";
+        $branchSubNo = $request->input("branchSubNo");
+
         $data =  DB::select(
             "SET NOCOUNT ON;
             EXEC sp_QtyByWH_Mobile
-                @FromDate = N'2000/01/01',
-                @ToDate = N'2100/01/01',
                 @Whno = ?,
-                @searchValue = ?",
-            [$Whno, $searchValue]
+                @searchValue = ?,
+                @branchSubNo = ?",
+            [$Whno, $searchValue, $branchSubNo]
         );
+
+        $user = User::where("BranchSubno", $branchSubNo)
+            ->select(["SaleRetail", "SaleWhole", "SaleVIP", "SalePromotion"])->first();
+
         $paginationData = $this->paginate($data, $page);
-        // return [
-        //     "data" => $paginationData->getCollection()
-        // ];
+
+        $request->merge([
+            "AllowedSaleForUser" => $user->toArray()
+        ]);
         return ItemsResource::collection($paginationData->getCollection())
             ->additional([
                 "handshakeCode" => $request->input("handshakeCode"),

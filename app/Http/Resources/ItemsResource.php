@@ -2,13 +2,11 @@
 
 namespace App\Http\Resources;
 
-use App\Models\BranchSub;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Log;
 
 class ItemsResource extends JsonResource
 {
-    private $additionalColumns = [];
-
     /**
      * Transform the resource into an array.
      *
@@ -17,89 +15,71 @@ class ItemsResource extends JsonResource
      */
     public function toArray($request)
     {
-        $this->addWholeSaleIfActive();
-        // $this->addVIPSaleIfActive();
-        $this->addPromotionSaleIfActive();
+        $AllowedSaleForUser = $request->input("AllowedSaleForUser");
 
-        $branchSub = BranchSub::find($request->input("branchSubNo"));
         return [
             "number" => $this->itemno,
             "name" => $this->itemDesc,
             "availableQty" => intval($this->CurrQty),
-            "sellPrice" => $this->getSalePrice($branchSub->SellingPriceCat),
-        ] + $this->additionalColumns;
+            "sellPrice" => floatval($this->SellPrice),
+            "retailSale" => $this->addRetailSaleIfActive($AllowedSaleForUser["SaleRetail"]),
+            "wholeSale" => $this->addWholeSaleIfActive($AllowedSaleForUser["SaleWhole"]),
+            "vipSale" => $this->addVipSaleIfActive($AllowedSaleForUser["SaleVIP"]),
+            "promotionSale" => $this->addPromotionSaleIfActive($AllowedSaleForUser["SalePromotion"]),
+        ];
+    }
+    private function addRetailSaleIfActive($isAllowedForUser)
+    {
+
+        return $this->when(
+            $isAllowedForUser,
+            [
+                "qty" => intval($this->CurrQty),
+                "price" => floatval($this->SellPrice),
+            ]
+        );
     }
 
-    private function addWholeSaleIfActive()
+
+    private function addWholeSaleIfActive($isAllowedForUser)
     {
-        if (
-            // $this->WholeSaleActive &&
-            $this->WholeSaleQty > 0 &&
-            $this->CurrQty > $this->WholeSaleQty &&
-            $this->WholeSale > 0
-        )
-            $this->additionalColumns = array_merge(
-                $this->additionalColumns,
-                [
-                    "wholeSale" => [
-                        "qty" => intval($this->WholeSaleQty),
-                        "price" => floatval($this->WholeSale),
-                    ]
-                ]
-            );
+        return $this->when(
+            $isAllowedForUser &&
+                $this->WholeSaleQty > 0 &&
+                $this->CurrQty >= $this->WholeSaleQty &&
+                $this->WholeSale > 0,
+            [
+                "qty" => intval($this->WholeSaleQty),
+                "price" => floatval($this->WholeSale),
+            ]
+        );
     }
 
-    // private function addVIPSaleIfActive()
-    // {
-    //     if (
-    //         // $this->VIPSaleActive &&
-    //         $this->VIPsaleQty > 0 &&
-    //         $this->CurrQty > $this->VIPsaleQty &&
-    //         $this->VIPsale > 0
-    //     )
-    //         $this->additionalColumns = array_merge(
-    //             $this->additionalColumns,
-    //             [
-    //                 "vipSale" => [
-    //                     "qty" => intval($this->VIPsaleQty),
-    //                     "price" => floatval($this->VIPsale),
-    //                 ]
-    //             ]
-    //         );
-    // }
-    private function addPromotionSaleIfActive()
+    private function addVIPSaleIfActive($isAllowedForUser)
     {
-        if (
-            $this->CurrQty >= $this->PromotionQtyReq + $this->PromotionQtyFree &&
-            $this->PromotionQtyReq > 0 &&
-            $this->PromotionQtyFree > 0
-        )
-            $this->additionalColumns = array_merge(
-                $this->additionalColumns,
-                [
-                    "promotionSale" => [
-                        "qtyReq" => intval($this->PromotionQtyReq),
-                        "qtyFree" => intval($this->PromotionQtyFree),
-                    ]
-                ]
-            );
+        return $this->when(
+            $isAllowedForUser &&
+                $this->VIPsaleQty > 0 &&
+                $this->CurrQty >= $this->VIPsaleQty &&
+                $this->VIPsale > 0,
+            [
+                "qty" => intval($this->VIPsaleQty),
+                "price" => floatval($this->VIPsale),
+            ]
+        );
     }
 
-    private function getSalePrice($salePriceCat)
+    private function addPromotionSaleIfActive($isAllowedForUser)
     {
-        $qty = NULL;
-        switch ($salePriceCat) {
-            case 1:
-                $qty = $this->SellPrice1;
-                break;
-            case 2:
-                $qty = $this->SellPrice2;
-                break;
-            case 3:
-                $qty = $this->SellPrice3;
-                break;
-        }
-
-        return floatval($qty);
+        return $this->when(
+            $isAllowedForUser &&
+                $this->CurrQty >= $this->PromotionQtyReq + $this->PromotionQtyFree &&
+                $this->PromotionQtyReq > 0 &&
+                $this->PromotionQtyFree > 0,
+            [
+                "qtyReq" => intval($this->PromotionQtyReq),
+                "qtyFree" => intval($this->PromotionQtyFree),
+            ]
+        );
     }
 }
