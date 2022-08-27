@@ -12,10 +12,11 @@ class Config extends Model
     protected $casts = [
         "SaleAccno" => "int",
         "CashSaleAccno" => "int",
+        "CashAccno" => "int",
     ];
 
     static public function getVatNumbers()
     {
-        return Config::first(["SaleAccno", "CashSaleAccno"])->toArray();
+        return Config::first(["SaleAccno", "CashSaleAccno", "CashAccno"])->toArray();
     }
 }
