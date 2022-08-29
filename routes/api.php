@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 const version = 2.9;
-const apkUrl = "https://www.mediafire.com/file/7o04xl7monga741/app-release-18.apk/file";
+const apkUrl = "https://www.mediafire.com/file/emgqmqd0dmigpat/app-release-18.apk/file";
 
 date_default_timezone_set("Asia/Riyadh");
 
