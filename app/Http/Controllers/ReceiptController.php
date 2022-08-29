@@ -60,7 +60,7 @@ class ReceiptController extends Controller
             $receipt = Receipt::create(
                 [
                     "Recno" => $newRecNo,
-                    "RecYear" => 2017,
+                    "RecYear" => 2018,
                     "Branchno" => 1,
                     "RecDate" => date('Y-m-d'),
                     "Amount" => $request->input("amount"),
