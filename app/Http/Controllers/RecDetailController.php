@@ -11,10 +11,10 @@ class RecDetailController extends Controller
     {
         return RecDetail::create([
             "RecNo" => $recNo,
-            "RecYear" => 2017,
+            "RecYear" => 2018,
             "Branchno" => 1,
             "AccNo" => $request->input("accNo"),
-            "AccYear" => 2017,
+            "AccYear" => 2018,
             "Amount" => $request->input("amount"),
             "Description" => $request->input("description"),
             "PaidType" => 1,
