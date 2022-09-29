@@ -43,24 +43,4 @@ class Item extends Model
     {
         return Item::find($itemNo)->VIPSaleQty;
     }
-
-
-    // static public function getAvailableQty($itemno, $storeNo)
-    // {
-    //     //TODO:handle this using bindings parameter to avoid injection
-    //     $availableQty = DB::select("
-    //     DECLARE @Result float
-
-    //     EXEC sp_QtyInStock
-    //     N'01-01-2000', 
-    //     N'01-01-2100',"
-    //         . $storeNo . ", 
-    //     N'" . $itemno . "', 
-    //     @Result OUTPUT
-
-    //     SELECT 	@Result as availableQty
-    //   ")[0]->availableQty;
-
-    //     return floatval($availableQty);
-    // }
 }

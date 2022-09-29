@@ -15,7 +15,7 @@ class InvoiceResource extends JsonResource
      */
     public function toArray($request)
     {
-        $createdUser = $this->getCreatedUser;
+        // $createdUser = $this->getCreatedUser;
         $invoiceItems = $this->invoiceItems;
 
         $customerVATno = NULL;

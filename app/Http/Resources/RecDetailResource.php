@@ -18,15 +18,15 @@ class RecDetailResource extends JsonResource
         $details = $this->receiptDetails;
 
         return [
-            "Recno" => $this->Recno,
-            "Amount" => $this->Amount,
-            "Description" => $this->Description,
+            "number" => $this->Recno,
+            "customerName" => Account::getName($details->AccNo),
+            "total" => $this->Amount,
+            "description" => $this->Description,
+            "createdDate" => $this->CreatedDate,
             // "RecAccno" => $this->RecAccno,
             // "RecType" => $this->RecType,
             // "SaleInvNo" => $this->SaleInvNo,
-            "CreatedDate" => $this->CreatedDate,
             // "AccNo" => $details->AccNo,
-            "AccName" => Account::getName($details->AccNo),
         ];
     }
 }

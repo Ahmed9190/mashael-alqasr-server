@@ -18,6 +18,7 @@ class SaleHeaderResource extends JsonResource
             "invno" => $this->invno,
             "CustName" => $this->CustName,
             "invdate" => date("Y-m-d", strtotime($this->invdate)),
+            "total" => floatval($this->total)
         ];
     }
 }

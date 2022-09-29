@@ -14,6 +14,8 @@ class SaleHeader extends Model
     protected $fillable = ["invno"];
     public $timestamps = false;
 
+    protected $casts = ["total" => "decimal:2"];
+
     public function invoiceItems()
     {
         return $this->hasMany(Invdetail::class, "Invno", "invno");

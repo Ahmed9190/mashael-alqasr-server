@@ -3,7 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\ConfigController;
-use App\Http\Controllers\CreditLimitController;
+use App\Http\Controllers\UserUtilsController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\ReceiptController;
@@ -20,8 +20,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-const version = 3.0;
-const apkUrl = "https://www.mediafire.com/file/doma1jph19lc18j/app-release-19.apk/file";
+const version = 3.1;
+const apkUrl = "https://www.mediafire.com/file/010n7e1105ry4b0/app-release-20.apk/file";
 
 date_default_timezone_set("Asia/Riyadh");
 
@@ -33,10 +33,12 @@ Route::get('apk-url', function () {
   return ["data" => apkUrl];
 });
 
+
 Route::group(['middleware' => "auth:api"], function () {
   Route::resource('customer', AccountController::class)->only(["index", "show"]);
   Route::resource('invoice', InvoiceController::class)->only(["index", "store", "show"]);
   Route::resource('receipt', ReceiptController::class)->only(["index", "store", "show"]);
   Route::get('items', [ItemController::class, "index"]);
-  Route::get("credit-restrictions", [CreditLimitController::class, 'show']);
+  Route::get("credit-restrictions", [UserUtilsController::class, 'getCreditLimit']);
 });
+// Route::get("get-overdue-debts", [UserUtilsController::class, 'getOverdueDebts']);

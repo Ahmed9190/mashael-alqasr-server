@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Config;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ConfigController extends Controller
@@ -18,6 +17,7 @@ class ConfigController extends Controller
     {
         $lastDate = DB::table("VATpercentDate")->max("VATdate");
         $lastVat = DB::table("VATpercentDate")->where("VATdate", $lastDate)->get(['VATpercent'])[0]->VATpercent;
+
         $vatNumbers = Config::getVatNumbers();
 
         return [

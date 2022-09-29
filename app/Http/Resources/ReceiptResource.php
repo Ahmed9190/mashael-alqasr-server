@@ -18,11 +18,11 @@ class ReceiptResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "Recno" => $this->Recno,
-            "Amount" => $this->Amount,
+            "number" => $this->Recno,
+            "total" => $this->Amount,
             "description" => $this->Description,
-            "AccName" => Account::getName(RecDetail::where("RecNo", $this->Recno)->first("AccNo")->AccNo),
-            "CreatedDate" => date($this->CreatedDate),
+            "customerName" => Account::getName(RecDetail::where("RecNo", $this->Recno)->first("AccNo")->AccNo),
+            "createdDate" => date($this->CreatedDate),
         ];
     }
 }

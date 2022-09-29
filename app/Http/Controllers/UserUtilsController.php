@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Account;
 use App\Models\BranchSub;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class CreditLimitController extends Controller
+class UserUtilsController extends Controller
 {
-    public function show(Request $request)
+    public function getCreditLimit(Request $request)
     {
         $customerMaxAllowableCredit = $this->getCustomerMaxAllowableCredit($request->AccNo);
         $delegateMaxAllowableCredit = $this->getDelegateMaxAllowableCredit($request->branchSubno);
@@ -23,7 +24,6 @@ class CreditLimitController extends Controller
             "delegateMaxAllowableCredit" => $delegateMaxAllowableCredit
         ];
     }
-
 
     private function getCustomerMaxAllowableCredit($AccNo)
     {
