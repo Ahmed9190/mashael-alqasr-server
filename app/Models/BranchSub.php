@@ -15,7 +15,8 @@ class BranchSub extends Model
     protected $guarded = ["Num"];
     public $timestamps = false;
     protected $casts = [
-        "SaleAccno" => "integer"
+        "SaleAccno" => "integer",
+        "ParentAcc" => "string"
     ];
 
     static public function getStoreNo($branchSubno)

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
@@ -36,22 +37,25 @@ class AuthController extends Controller
 
     private function getOverdueDebts(int $BranchSubno)
     {
-        return Cache::remember("overdueDebts", now()->addHours(5), function () use ($BranchSubno) {
+        return Cache::remember("OVERDUE_DEBTS", now()->addHours(5), function () use ($BranchSubno) {
             $procedureParams = BranchSub::where("Num", $BranchSubno)->select(["ParentCustAccno as ParentAcc", "CreditPeriod as Period"])->first();
 
             [$overdueDebts] = DB::select(
-                'SET NOCOUNT ON;
+                "SET NOCOUNT ON;
             DECLARE @OverdueDebts FLOAT;
         
             EXEC sp_AccDebitCreditMobile
-                    @ParentAcc = "?",
-                    @Period = "?",
+                    @ParentAcc = ?,
+                    @Period = ?,
                     @Value = @OverdueDebts OUTPUT;
                     
-            SELECT @OverdueDebts AS "overdueDebts";',
+            SELECT @OverdueDebts AS 'overdueDebts';",
                 [$procedureParams->ParentAcc, $procedureParams->Period]
             );
-            return round(floatval($overdueDebts->overdueDebts), 2);
+
+            $overdueDebts = floatval($overdueDebts->overdueDebts);
+
+            return round($overdueDebts, 2);
         });
     }
 }
