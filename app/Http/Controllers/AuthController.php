@@ -37,7 +37,7 @@ class AuthController extends Controller
 
     private function getOverdueDebts(int $BranchSubno)
     {
-        return Cache::remember("OVERDUE_DEBTS", now()->addHours(5), function () use ($BranchSubno) {
+        return Cache::remember("OVERDUE_DEBTS" . $BranchSubno, now()->addHours(5), function () use ($BranchSubno) {
             $procedureParams = BranchSub::where("Num", $BranchSubno)->select(["ParentCustAccno as ParentAcc", "CreditPeriod as Period"])->first();
 
             [$overdueDebts] = DB::select(
