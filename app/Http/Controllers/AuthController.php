@@ -51,7 +51,7 @@ class AuthController extends Controller
             SELECT @OverdueDebts AS "overdueDebts";',
                 [$procedureParams->ParentAcc, $procedureParams->Period]
             );
-            return floatval($overdueDebts->overdueDebts);
+            return round(floatval($overdueDebts->overdueDebts), 2);
         });
     }
 }
