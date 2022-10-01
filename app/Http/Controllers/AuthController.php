@@ -9,7 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
@@ -39,14 +38,14 @@ class AuthController extends Controller
     {
         return Cache::remember("overdueDebts", now()->addHours(5), function () use ($BranchSubno) {
             $procedureParams = BranchSub::where("Num", $BranchSubno)->select(["ParentCustAccno as ParentAcc", "CreditPeriod as Period"])->first();
-            Log::info($procedureParams);
+
             [$overdueDebts] = DB::select(
                 'SET NOCOUNT ON;
             DECLARE @OverdueDebts FLOAT;
         
             EXEC sp_AccDebitCreditMobile
-                    @ParentAcc = ?,
-                    @Period = ?,
+                    @ParentAcc = "?",
+                    @Period = "?",
                     @Value = @OverdueDebts OUTPUT;
                     
             SELECT @OverdueDebts AS "overdueDebts";',
