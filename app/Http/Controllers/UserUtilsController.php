@@ -55,4 +55,27 @@ class UserUtilsController extends Controller
     {
         return BranchSub::where("Num", $branchSubNo)->first("CreditLimit")->CreditLimit;
     }
+
+    public function getOverdueDebts(Request $request)
+    {
+        $BranchSubno = $request->branchSubno;
+        $procedureParams = BranchSub::where("Num", $BranchSubno)->select(["ParentCustAccno as ParentAcc", "CreditPeriod as Period"])->first();
+
+        [$overdueDebts] = DB::select(
+            "SET NOCOUNT ON;
+            DECLARE @OverdueDebts FLOAT;
+
+            EXEC sp_AccDebitCreditMobile
+                    @ParentAcc = ?,
+                    @Period = ?,
+                    @Value = @OverdueDebts OUTPUT;
+
+            SELECT @OverdueDebts AS 'overdueDebts';",
+            [$procedureParams->ParentAcc, intval($procedureParams->Period)]
+        );
+
+        $overdueDebts = floatval($overdueDebts->overdueDebts);
+
+        return round($overdueDebts, 2);
+    }
 }

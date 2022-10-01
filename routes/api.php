@@ -20,8 +20,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-const version = 3.2;
-const apkUrl = "https://www.mediafire.com/file/mxpf0ronjbkevjw/app-release-21.apk/file";
+const version = 3.3;
+const apkUrl = "https://www.mediafire.com/file/n3kejvft1zqbrqs/app-release-22.apk/file";
 
 date_default_timezone_set("Asia/Riyadh");
 
@@ -40,5 +40,5 @@ Route::group(['middleware' => "auth:api"], function () {
   Route::resource('receipt', ReceiptController::class)->only(["index", "store", "show"]);
   Route::get('items', [ItemController::class, "index"]);
   Route::get("credit-restrictions", [UserUtilsController::class, 'getCreditLimit']);
+  Route::get("get-overdue-debts", [UserUtilsController::class, 'getOverdueDebts']);
 });
-// Route::get("get-overdue-debts", [UserUtilsController::class, 'getOverdueDebts']);
